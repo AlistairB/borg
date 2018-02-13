@@ -2,6 +2,9 @@
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module BoardProcessor
@@ -9,11 +12,14 @@ module BoardProcessor
   , GameApp
   ) where
 
-import           Control.Lens          (over, use, (%=), _Just)
+import           Control.Lens          (over, use, (%=), (%~), _Just)
 import           Control.Monad.State   (MonadState, StateT, modify)
 import           Control.Monad.Writer  (MonadWriter, Writer, tell)
 import           Data.Functor.Identity (Identity)
 import           Data.Semigroup        (Semigroup, (<>))
+import Control.Monad.Freer
+import qualified Control.Monad.Freer.State as EffS
+import qualified Control.Monad.Freer.Writer as EffW
 
 import           BoardFunctions        (left, move, place, report, right,
                                         validate)
@@ -36,6 +42,8 @@ type MessageWriter = MonadWriter [String]
 
 type GameApp s = StateT s (Writer [String]) ()
 
+type GameApp2 s = Eff '[EffS.State s, EffW.Writer [String]] ()
+
 type GameAction = MonadState T.Board
 
 instance Semigroup (GameApp s) where
@@ -47,6 +55,9 @@ instance Monoid (GameApp s) where
 
 placeAction :: GameAction m => T.Coordinate -> T.Direction -> m ()
 placeAction coords facing = validatedAction $ place (T.Robot coords facing)
+
+leftAction2 :: Member (EffS.State T.Board) r => Eff r ()
+leftAction2 = EffS.modify (placedRobotFacing %~ left)
 
 moveAction :: GameAction m => m ()
 moveAction = validatedAction $ over placedRobot move

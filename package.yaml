@@ -35,6 +35,7 @@ library:
   - megaparsec
   - lens
   - mtl
+  - freer-simple
 
 executables:
   toy-robot-exe:
