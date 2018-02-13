@@ -1,6 +1,9 @@
 {-# LANGUAGE ConstraintKinds      #-}
+{-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
@@ -9,15 +12,16 @@ module BoardProcessor
   , GameApp
   ) where
 
-import           Control.Lens          (over, use, (%=), _Just)
-import           Control.Monad.State   (MonadState, StateT, modify)
-import           Control.Monad.Writer  (MonadWriter, Writer, tell)
-import           Data.Functor.Identity (Identity)
-import           Data.Semigroup        (Semigroup, (<>))
+import           Control.Lens               ((%~), _Just)
+import           Control.Monad.Freer        (Eff, Member)
+import           Control.Monad.Freer.State  (State, get, modify)
+import           Control.Monad.Freer.Writer (Writer, tell)
+import           Data.Functor.Identity      (Identity)
+import           Data.Semigroup             (Semigroup, (<>))
 
-import           BoardFunctions        (left, move, place, report, right,
-                                        validate)
-import qualified Types                 as T
+import           BoardFunctions             (left, move, place, report, right,
+                                             validate)
+import qualified Types                      as T
 
 getAction :: T.Command -> GameApp T.Board
 getAction (T.Place coords facing) = placeAction coords facing
@@ -32,11 +36,11 @@ placedRobot = T.boardRobot . _Just
 placedRobotFacing :: (T.Direction -> Identity T.Direction) -> T.Board -> Identity T.Board
 placedRobotFacing = placedRobot . T.robotFacing
 
-type MessageWriter = MonadWriter [String]
+type GameApp s = Eff '[State s, Writer [String]] ()
 
-type GameApp s = StateT s (Writer [String]) ()
+type GameAction = Member (State T.Board)
 
-type GameAction = MonadState T.Board
+type MessageWriter = Member (Writer [String])
 
 instance Semigroup (GameApp s) where
   (<>) = (>>)
@@ -45,19 +49,19 @@ instance Monoid (GameApp s) where
   mempty = pure ()
   mappend = (<>)
 
-placeAction :: GameAction m => T.Coordinate -> T.Direction -> m ()
+placeAction :: GameAction r => T.Coordinate -> T.Direction -> Eff r ()
 placeAction coords facing = validatedAction $ place (T.Robot coords facing)
 
-moveAction :: GameAction m => m ()
-moveAction = validatedAction $ over placedRobot move
+moveAction :: GameAction r => Eff r ()
+moveAction = validatedAction (placedRobot %~ move)
 
-leftAction :: GameAction m => m ()
-leftAction = placedRobotFacing %= left
+leftAction :: GameAction r => Eff r ()
+leftAction = modify (placedRobotFacing %~ left)
 
-rightAction :: GameAction m => m ()
-rightAction = placedRobotFacing %= right
+rightAction :: GameAction r => Eff r ()
+rightAction = modify (placedRobotFacing %~ right)
 
-validatedAction :: GameAction m => (T.Board -> T.Board) -> m ()
+validatedAction :: GameAction r => (T.Board -> T.Board) -> Eff r ()
 validatedAction updateBoard = modify maybeUpdate
   where
     maybeUpdate b = let newB = updateBoard b
@@ -65,9 +69,9 @@ validatedAction updateBoard = modify maybeUpdate
                           then newB
                           else b
 
-reportAction :: (GameAction m, MessageWriter m) => m ()
+reportAction :: (GameAction r, MessageWriter r) => Eff r ()
 reportAction = do
-  r <- use T.boardRobot
+  r <- T._boardRobot <$> get
   case r of
     (Just r') -> tell [report r']
     _         -> pure ()

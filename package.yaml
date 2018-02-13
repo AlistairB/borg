@@ -11,7 +11,6 @@ extra-source-files:
 
 ghc-options:
 - -Wall
-- -Werror
 - -Wcompat
 - -Wincomplete-uni-patterns
 - -Wincomplete-record-updates
@@ -34,7 +33,7 @@ library:
   dependencies:
   - megaparsec
   - lens
-  - mtl
+  - freer-simple
 
 executables:
   toy-robot-exe:
