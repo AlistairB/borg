@@ -1,10 +1,10 @@
 {-# LANGUAGE ConstraintKinds      #-}
+{-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DataKinds #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module BoardProcessor
@@ -12,16 +12,16 @@ module BoardProcessor
   , GameApp
   ) where
 
-import           Control.Lens          (over, use, (%=), (%~), _Just)
-import           Data.Functor.Identity (Identity)
-import           Data.Semigroup        (Semigroup, (<>))
-import Control.Monad.Freer
-import Control.Monad.Freer.State
-import Control.Monad.Freer.Writer
+import           Control.Lens               ((%~), _Just)
+import           Control.Monad.Freer        (Eff, Member)
+import           Control.Monad.Freer.State  (State, get, modify)
+import           Control.Monad.Freer.Writer (Writer, tell)
+import           Data.Functor.Identity      (Identity)
+import           Data.Semigroup             (Semigroup, (<>))
 
-import           BoardFunctions        (left, move, place, report, right,
-                                        validate)
-import qualified Types                 as T
+import           BoardFunctions             (left, move, place, report, right,
+                                             validate)
+import qualified Types                      as T
 
 getAction :: T.Command -> GameApp T.Board
 getAction (T.Place coords facing) = placeAction coords facing

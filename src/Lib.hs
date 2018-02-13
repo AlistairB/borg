@@ -2,14 +2,15 @@ module Lib
   ( runRobot
   ) where
 
-import           Data.Maybe           (catMaybes)
-import Control.Monad.Freer
-import Control.Monad.Freer.State
-import Control.Monad.Freer.Writer
+import           Control.Monad.Freer        (run)
+import           Control.Monad.Freer.State  (evalState)
+import           Control.Monad.Freer.Writer (runWriter)
+import           Data.Maybe                 (catMaybes)
 
-import           BoardProcessor       (getAction)
-import           Parser               (parseCommand)
-import           Types                (Board (Board), Coordinate (Coordinate))
+import           BoardProcessor             (getAction)
+import           Parser                     (parseCommand)
+import           Types                      (Board (Board),
+                                             Coordinate (Coordinate))
 
 runRobot :: [String] -> [String]
 runRobot input =
