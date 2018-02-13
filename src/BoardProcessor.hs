@@ -13,13 +13,11 @@ module BoardProcessor
   ) where
 
 import           Control.Lens          (over, use, (%=), (%~), _Just)
-import           Control.Monad.State   (MonadState, StateT, modify)
-import           Control.Monad.Writer  (MonadWriter, Writer, tell)
 import           Data.Functor.Identity (Identity)
 import           Data.Semigroup        (Semigroup, (<>))
 import Control.Monad.Freer
-import qualified Control.Monad.Freer.State as EffS
-import qualified Control.Monad.Freer.Writer as EffW
+import Control.Monad.Freer.State
+import Control.Monad.Freer.Writer
 
 import           BoardFunctions        (left, move, place, report, right,
                                         validate)
@@ -38,13 +36,11 @@ placedRobot = T.boardRobot . _Just
 placedRobotFacing :: (T.Direction -> Identity T.Direction) -> T.Board -> Identity T.Board
 placedRobotFacing = placedRobot . T.robotFacing
 
-type MessageWriter = MonadWriter [String]
+type GameApp s = Eff '[State s, Writer [String]] ()
 
-type GameApp s = StateT s (Writer [String]) ()
+type GameAction = Member (State T.Board)
 
-type GameApp2 s = Eff '[EffS.State s, EffW.Writer [String]] ()
-
-type GameAction = MonadState T.Board
+type MessageWriter = Member (Writer [String])
 
 instance Semigroup (GameApp s) where
   (<>) = (>>)
@@ -53,22 +49,19 @@ instance Monoid (GameApp s) where
   mempty = pure ()
   mappend = (<>)
 
-placeAction :: GameAction m => T.Coordinate -> T.Direction -> m ()
+placeAction :: GameAction r => T.Coordinate -> T.Direction -> Eff r ()
 placeAction coords facing = validatedAction $ place (T.Robot coords facing)
 
-leftAction2 :: Member (EffS.State T.Board) r => Eff r ()
-leftAction2 = EffS.modify (placedRobotFacing %~ left)
+moveAction :: GameAction r => Eff r ()
+moveAction = validatedAction (placedRobot %~ move)
 
-moveAction :: GameAction m => m ()
-moveAction = validatedAction $ over placedRobot move
+leftAction :: GameAction r => Eff r ()
+leftAction = modify (placedRobotFacing %~ left)
 
-leftAction :: GameAction m => m ()
-leftAction = placedRobotFacing %= left
+rightAction :: GameAction r => Eff r ()
+rightAction = modify (placedRobotFacing %~ right)
 
-rightAction :: GameAction m => m ()
-rightAction = placedRobotFacing %= right
-
-validatedAction :: GameAction m => (T.Board -> T.Board) -> m ()
+validatedAction :: GameAction r => (T.Board -> T.Board) -> Eff r ()
 validatedAction updateBoard = modify maybeUpdate
   where
     maybeUpdate b = let newB = updateBoard b
@@ -76,9 +69,9 @@ validatedAction updateBoard = modify maybeUpdate
                           then newB
                           else b
 
-reportAction :: (GameAction m, MessageWriter m) => m ()
+reportAction :: (GameAction r, MessageWriter r) => Eff r ()
 reportAction = do
-  r <- use T.boardRobot
+  r <- T._boardRobot <$> get
   case r of
     (Just r') -> tell [report r']
     _         -> pure ()
