@@ -33,7 +33,6 @@ library:
   dependencies:
   - megaparsec
   - lens
-  - mtl
   - freer-simple
 
 executables:
