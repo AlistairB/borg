@@ -43,7 +43,6 @@ instance Semigroup (GameApp s) where
 
 instance Monoid (GameApp s) where
   mempty = pure ()
-  mappend = (<>)
 
 placeAction :: GameAction m => T.Coordinate -> T.Direction -> m ()
 placeAction coords facing = validatedAction $ place (T.Robot coords facing)
