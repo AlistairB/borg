@@ -20,6 +20,9 @@ ghc-options:
 - -Wmissing-import-lists
 - -Wmonomorphism-restriction
 
+default-extensions:
+- MultiWayIf
+
 dependencies:
   - base >= 4.11 && < 5
 
