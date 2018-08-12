@@ -25,5 +25,5 @@ runInput = runRobot . lines
 instructions :: String
 instructions = "---------------------------------------------\n\
                \We are Borg. You will be assimilated.\n\
-               \Give us instructions to move around the board\n\
+               \Give us instructions to move around the board.\n\
                \PLACE X,Y,FACING - MOVE - LEFT - RIGHT"
