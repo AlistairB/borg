@@ -25,6 +25,8 @@ default-extensions:
 
 dependencies:
   - base >= 4.11 && < 5
+  - lens
+  - mtl
 
 library:
   source-dirs: src
@@ -36,8 +38,6 @@ library:
   - Types
   dependencies:
   - megaparsec
-  - lens
-  - mtl
 
 executables:
   toy-robot-exe:
@@ -62,7 +62,5 @@ tests:
     - toy-robot
     - hspec
     - QuickCheck
-    - lens
     - checkers
     - hspec-checkers
-    - mtl
