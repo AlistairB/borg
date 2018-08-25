@@ -7,8 +7,9 @@ module BoardFunctions
   , report
   ) where
 
-import           Control.Lens (over, set)
-import           Data.Char    (toUpper)
+import           Control.Lens   (over, set)
+import           Data.Char      (toUpper)
+import           Data.Semigroup ((<>))
 
 import qualified Types        as T
 
@@ -32,7 +33,7 @@ move r@(T.Robot _ T.West)  = over (T.robotPosition . T.coordinateX) (flip (-) 1)
 
 report :: T.Robot -> String
 report (T.Robot (T.Coordinate robotX robotY) facing) =
-  show robotX ++ "," ++ show robotY ++ "," ++ (toUpper <$> show facing)
+  show robotX <> "," <> show robotY <> "," <> (toUpper <$> show facing)
 
 validate :: T.Board -> Bool
 validate (T.Board _ Nothing) = True
