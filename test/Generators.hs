@@ -1,12 +1,13 @@
 module Generators where
 
-import           Test.QuickCheck     (Gen, elements)
-import           Test.QuickCheck.Gen (choose)
+import           Hedgehog       (Gen)
+import           Hedgehog.Gen   (enum, int)
+import qualified Hedgehog.Range as HR
 
-import qualified Types               as T
+import qualified Types          as T
 
 genDirection :: Gen T.Direction
-genDirection = elements [toEnum 0 ..]
+genDirection = enum T.North T.West
 
 genRobot :: Gen T.Robot
 genRobot = do
@@ -16,21 +17,21 @@ genRobot = do
 
 genCoordinate :: Gen T.Coordinate
 genCoordinate = do
-  x <- choose (1, 5)
-  y <- choose (1, 5)
+  x <- int $ HR.constant 1 5
+  y <- int $ HR.constant 1 5
   pure $ T.Coordinate x y
 
 genRobotWithin :: Int -> Int -> Gen T.Robot
 genRobotWithin x y = do
-  x' <- choose (1, x)
-  y' <- choose (1, y)
+  x' <- int $ HR.constant 1 x
+  y' <- int $ HR.constant 1 y
   f  <- genDirection
   pure $ T.Robot (T.Coordinate x' y') f
 
 genRobotGreaterThan :: Int -> Int -> Gen T.Robot
 genRobotGreaterThan x y = do
-  x' <- choose (x + 1, maxBound)
-  y' <- choose (y + 1, maxBound)
+  x' <- int $ HR.constant (x + 1) maxBound
+  y' <- int $ HR.constant (y + 1) maxBound
   f  <- genDirection
   pure $ T.Robot (T.Coordinate x' y') f
 
@@ -53,8 +54,8 @@ genBoardNoRobot = do
 
 genPlaceCommandWithin :: Int -> Int -> Gen T.Command
 genPlaceCommandWithin x y = do
-  x' <- choose (1, x)
-  y' <- choose (1, y)
+  x' <- int $ HR.constant 1 x
+  y' <- int $ HR.constant 1 y
   d  <- genDirection
   pure $ T.Place (T.Coordinate x' y') d
 

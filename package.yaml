@@ -62,5 +62,6 @@ tests:
     - toy-robot
     - hspec
     - QuickCheck
+    - hedgehog
     - checkers
     - hspec-checkers
