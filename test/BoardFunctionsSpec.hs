@@ -1,20 +1,23 @@
 module BoardFunctionsSpec where
 
-import           Test.Hspec      (Spec, describe, it, shouldBe)
-import           Test.QuickCheck (forAll, property)
+import           HaskellWorks.Hspec.Hedgehog (require)
+import           Hedgehog                    (forAll, property, (===))
+import           Test.Hspec                  (Spec, describe, it, shouldBe)
 
-import           BoardFunctions  (left, move, place, report, right, validate)
-import           Generators      (genBoardInvalidRobot, genBoardNoRobot,
-                                  genBoardValidRobot, genRobot)
-import qualified Types           as T
+import           BoardFunctions              (left, move, place, report, right,
+                                              validate)
+import           Generators                  (genBoardInvalidRobot,
+                                              genBoardNoRobot,
+                                              genBoardValidRobot, genRobot)
+import qualified Types                       as T
 
 spec :: Spec
 spec = describe "BoardFunctions" $ do
 
   describe "place" $
-    it "places a robot on the board" $ property $
-      forAll genRobot $ \r ->
-        place r (T.Board (T.Coordinate 5 5) Nothing) `shouldBe` T.Board (T.Coordinate 5 5) (Just r)
+    it "places a robot on the board" $ require $ property $ do
+      r <- forAll genRobot
+      place r (T.Board (T.Coordinate 5 5) Nothing) === T.Board (T.Coordinate 5 5) (Just r)
 
   describe "move" $ do
     it "moves north" $
@@ -50,17 +53,17 @@ spec = describe "BoardFunctions" $ do
     it "turns left from west"  $ left T.East  `shouldBe` T.North
 
   describe "validateBoard" $ do
-    it "validates a board with no robot" $ property $
-      forAll genBoardNoRobot $ \b ->
-        validate b `shouldBe` True
+    it "validates a board with no robot" $ require $ property $ do
+      b <- forAll genBoardNoRobot
+      validate b === True
 
-    it "validates a board with a valid robot" $ property $
-      forAll genBoardValidRobot $ \b ->
-        validate b `shouldBe` True
+    it "validates a board with a valid robot" $ require $ property $ do
+      b <- forAll genBoardValidRobot
+      validate b === True
 
-    it "validates a board with an invalid robot" $ property $
-      forAll genBoardInvalidRobot $ \b ->
-        validate b `shouldBe` False
+    it "validates a board with an invalid robot" $ require $ property $ do
+      b <- forAll genBoardInvalidRobot
+      validate b === False
 
   describe "report" $
     it "produces a report" $

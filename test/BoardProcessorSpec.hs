@@ -3,8 +3,8 @@ module BoardProcessorSpec where
 import           Control.Lens         (set, _Just)
 import           Control.Monad.State  (execStateT)
 import           Control.Monad.Writer (execWriter, runWriter)
+import           Hedgehog.Gen         (sample)
 import           Test.Hspec           (Spec, describe, it, shouldBe)
-import           Test.QuickCheck.Gen  (generate)
 
 import           BoardProcessor       (getAction)
 import           Generators           (genBoardNoRobot, genBoardValidRobot,
@@ -16,8 +16,8 @@ spec = describe "getAction" $ do
 
   describe "placeAction" $ do
     it "performs a place" $ do
-      board@(T.Board bc@(T.Coordinate x y) _) <- generate genBoardNoRobot
-      command@(T.Place cc cdir)               <- generate $ genPlaceCommandWithin x y
+      board@(T.Board bc@(T.Coordinate x y) _) <- sample genBoardNoRobot
+      command@(T.Place cc cdir)               <- sample $ genPlaceCommandWithin x y
       let action      = getAction command
           (result, _) = runWriter $ execStateT action board
           expected    = T.Board bc (Just $ T.Robot cc cdir)
@@ -31,7 +31,7 @@ spec = describe "getAction" $ do
 
   describe "leftAction" $
     it "performs a left" $ do
-      board@(T.Board bc (Just (T.Robot rc _))) <- generate genBoardValidRobot
+      board@(T.Board bc (Just (T.Robot rc _))) <- sample genBoardValidRobot
       let testBoard   = set (T.boardRobot . _Just . T.robotFacing) T.North board
           action      = getAction T.TurnLeft
           (result, _) = runWriter $ execStateT action testBoard
@@ -40,7 +40,7 @@ spec = describe "getAction" $ do
 
   describe "rightAction" $
     it "performs a right" $ do
-      board@(T.Board bc (Just (T.Robot rc _))) <- generate genBoardValidRobot
+      board@(T.Board bc (Just (T.Robot rc _))) <- sample genBoardValidRobot
       let testBoard   = set (T.boardRobot . _Just . T.robotFacing) T.North board
           action      = getAction T.TurnRight
           (result, _) = runWriter $ execStateT action testBoard
