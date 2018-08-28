@@ -61,6 +61,5 @@ tests:
     dependencies:
     - toy-robot
     - hspec
-    - QuickCheck
-    - checkers
-    - hspec-checkers
+    - hedgehog
+    - hw-hspec-hedgehog
