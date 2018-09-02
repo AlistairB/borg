@@ -1,4 +1,10 @@
-module Generators where
+module Generators
+  ( genRobot
+  , genBoardValidRobot
+  , genBoardInvalidRobot
+  , genBoardNoRobot
+  , genPlaceCommandWithin
+  ) where
 
 import           Test.QuickCheck     (Gen, elements)
 import           Test.QuickCheck.Gen (choose)
@@ -57,4 +63,3 @@ genPlaceCommandWithin x y = do
   y' <- choose (1, y)
   d  <- genDirection
   pure $ T.Place (T.Coordinate x' y') d
-
