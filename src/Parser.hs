@@ -15,7 +15,7 @@ type Parser = Parsec Void String
 
 data Email = Email
   { eFirstPart :: String
-  , eDomain :: String
+  , eSLD :: String
   } deriving Show
 
 email :: String
@@ -25,19 +25,9 @@ emailParser :: Parser Email
 emailParser = do
   firstPart <- some alphaNumChar
   char '@'
-  domain <- some alphaNumChar
+  sld <- some alphaNumChar
   string' ".com"
-  pure $ Email firstPart domain
-
-
-
-
-
-
-
-
-
-
+  pure $ Email firstPart sld
 
 
 
@@ -73,9 +63,9 @@ place :: Parser T.Command
 place = do
   string' "PLACE"
   space
-  x :: Int <- L.decimal
+  x <- L.decimal
   char ','
-  y :: Int <- L.decimal
+  y <- L.decimal
   char ','
   d <- direction
   pure $ T.Place (T.Coordinate x y) d
