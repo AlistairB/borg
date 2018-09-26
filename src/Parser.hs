@@ -37,9 +37,9 @@ place :: Parser T.Command
 place = do
   string' "PLACE"
   space
-  x :: Int <- L.decimal
+  x <- L.decimal
   char ','
-  y :: Int <- L.decimal
+  y <- L.decimal
   char ','
   d <- direction
   pure $ T.Place (T.Coordinate x y) d
