@@ -1,4 +1,4 @@
-# We Are Borg 
+# We Are Borg
 
 Your Haskell toy robot will be assimilated. It's technological distinctiveness will be added to our own. Resistence is futile.
 
@@ -36,4 +36,10 @@ auto/run data/ex1.txt
 
 ```bash
 auto/test
+```
+
+## HLint
+
+```bash
+auto/hlint
 ```

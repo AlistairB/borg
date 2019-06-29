@@ -3,5 +3,4 @@ set -Eexuo pipefail
 
 cd "$(dirname "$0")"/..
 
-
-stack test
+stack exec hlint .

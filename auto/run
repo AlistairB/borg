@@ -1,7 +1,6 @@
-#!/bin/bash -eu
+#!/bin/bash
+set -Eexuo pipefail
 
-cd $(dirname $0)/..
+cd "$(dirname "$0")"/..
 
-stack build
-
-stack exec toy-robot-exe "$@"
+stack run "$@"
