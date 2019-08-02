@@ -11,7 +11,6 @@ module BoardProcessor
 import           Control.Lens          (over, use, (%=), _Just)
 import           Control.Monad.State   (MonadState, StateT, modify)
 import           Control.Monad.Writer  (MonadWriter, Writer, tell)
-import           Data.Functor.Identity (Identity)
 import           Data.Semigroup        (Semigroup, (<>))
 
 import           BoardFunctions        (left, move, place, report, right,
@@ -25,10 +24,10 @@ getAction T.TurnRight             = rightAction
 getAction T.Move                  = moveAction
 getAction T.Report                = reportAction
 
-placedRobot :: (T.Robot -> Identity T.Robot) -> T.Board -> Identity T.Board
+placedRobot :: Applicative f => (T.Robot -> f T.Robot) -> T.Board -> f T.Board
 placedRobot = T.boardRobot . _Just
 
-placedRobotFacing :: (T.Direction -> Identity T.Direction) -> T.Board -> Identity T.Board
+placedRobotFacing :: Applicative f => (T.Direction -> f T.Direction) -> T.Board -> f T.Board
 placedRobotFacing = placedRobot . T.robotFacing
 
 type MessageWriter = MonadWriter [String]
