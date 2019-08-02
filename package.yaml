@@ -21,6 +21,7 @@ ghc-options:
 
 default-extensions:
 - MultiWayIf
+- StrictData
 
 dependencies:
   - base >= 4.11 && < 5
