@@ -14,12 +14,12 @@ data SmallerThan (limit :: Nat) where
   SmallerThanZ :: SmallerThan ('S any)
   SmallerThanS :: SmallerThan any -> SmallerThan ('S any)
 
-data PositiveSmallerThan (limit :: Nat) where
-  PSTOne :: PositiveSmallerThan ('S 'Z)
-  PSTSmallerThan :: PositiveSmallerThan any -> PositiveSmallerThan ('S any)
+data PositiveNat (size :: Nat) where
+  PNatOne :: PositiveNat ('S 'Z)
+  PNatS :: PositiveNat ('S n) -> PositiveNat ('S ('S n))
 
 data Board (boardSize :: Nat) = Board
-  { _boardSize     :: PositiveSmallerThan boardSize
+  { _boardSize     :: PositiveNat boardSize
   , _boardRobot    :: Robot boardSize
   }
 
@@ -35,7 +35,7 @@ data SmallerThanCoord (smallerThan :: Nat) = SmallerThanCoord
 board :: Board ('S ('S 'Z))
 board =
   let robotCoord = SmallerThanCoord SmallerThanZ SmallerThanZ
-      boardSize  = PSTSmallerThan PSTOne
+      boardSize  = PNatS PNatOne
   in  Board boardSize $ Robot $ robotCoord
 
 instance Show (SmallerThan n) where
