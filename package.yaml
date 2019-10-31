@@ -38,6 +38,7 @@ library:
   - megaparsec
   - lens
   - mtl
+  - refined
 
 executables:
   toy-robot-exe:

@@ -65,9 +65,9 @@ type family Dec (a :: Nat) :: Nat where
 type family Incr (a :: Nat) :: Nat where
   Incr n = 'S n
 
-decrement :: SmallerThan n -> SmallerThan (Dec n)
-decrement SmallerThanZ = SmallerThanZ
-decrement (SmallerThanS n) = n
+-- decrement :: SmallerThan n -> SmallerThan (Dec n)
+-- decrement SmallerThanZ = SmallerThanZ
+-- decrement (SmallerThanS n) = n
 
 instance Show (SmallerThan n) where
   show SmallerThanZ = "SmallerThanZ"
