@@ -11,7 +11,6 @@ module BoardProcessor
 import           Control.Lens          (over, use, (%=), _Just)
 import           Control.Monad.State   (MonadState, StateT, modify)
 import           Control.Monad.Writer  (MonadWriter, Writer, tell)
-import           Data.Semigroup        (Semigroup, (<>))
 
 import           BoardFunctions        (left, move, place, report, right,
                                         validate)
@@ -58,8 +57,9 @@ validatedAction :: GameAction m => (T.Board -> T.Board) -> m ()
 validatedAction updateBoard = modify maybeUpdate
   where
     maybeUpdate b = let newB = updateBoard b
-                    in  if | validate newB -> newB
-                           | otherwise     -> b
+                    in  if validate newB
+                          then newB
+                          else b
 
 reportAction :: (GameAction m, MessageWriter m) => m ()
 reportAction = do
