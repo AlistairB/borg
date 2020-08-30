@@ -9,7 +9,6 @@ module BoardFunctions
 
 import           Control.Lens   (over, set)
 import           Data.Char      (toUpper)
-import           Data.Semigroup ((<>))
 
 import qualified Types        as T
 

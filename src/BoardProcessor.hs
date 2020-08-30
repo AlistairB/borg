@@ -11,7 +11,6 @@ module BoardProcessor
 import           Control.Lens          (over, use, (%=), _Just)
 import           Control.Monad.State   (MonadState, StateT, modify)
 import           Control.Monad.Writer  (MonadWriter, Writer, tell)
-import           Data.Semigroup        (Semigroup, (<>))
 
 import           BoardFunctions        (left, move, place, report, right,
                                         validate)

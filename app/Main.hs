@@ -3,7 +3,6 @@ module Main where
 import           Data.List          (intercalate)
 import           Data.Maybe         (listToMaybe)
 import           System.Environment (getArgs)
-import           System.IO          (readFile)
 
 import           Lib                (runRobot)
 
