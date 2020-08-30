@@ -57,8 +57,9 @@ validatedAction :: GameAction m => (T.Board -> T.Board) -> m ()
 validatedAction updateBoard = modify maybeUpdate
   where
     maybeUpdate b = let newB = updateBoard b
-                    in  if | validate newB -> newB
-                           | otherwise     -> b
+                    in  if validate newB
+                          then newB
+                          else b
 
 reportAction :: (GameAction m, MessageWriter m) => m ()
 reportAction = do
