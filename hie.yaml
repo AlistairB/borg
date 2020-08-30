@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "toy-robot:lib"
+
+    - path: "./app/Main.hs"
+      component: "toy-robot:exe:toy-robot-exe"
+
+    - path: "./app/Paths_toy_robot.hs"
+      component: "toy-robot:exe:toy-robot-exe"
+
+    - path: "./test"
+      component: "toy-robot:test:toy-robot-test"
